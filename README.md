@@ -48,3 +48,27 @@ make
 ```
 
 5. Run NeoVim [Host]
+
+### Missing headers
+
+The above approach will work for linting.
+
+But when you want to use, for example, `Go to definition (gd)`, you will be redirected to a non-existent file because it only exists in the container.
+
+To add this functionality, modify the above method as follows:
+
+1. While in the `build` folder, copy the usr folder into it [Docker container]
+```sh
+cp -r /usr usr
+```
+
+2. Add path-mappings to clangd arguments [Host]
+```lua
+require('lspconfig').clangd.setup {
+  cmd = { "docker", "exec",  "-i", "example_container", "clangd", "--compile-commands-dir=<PATH_TO_REPO>/examples/exampleApp/build", "--path-mappings=<PATH_TO_REPO>/examples/exampleApp/build/usr=/usr"},
+}
+```
+
+Presentation:
+
+![example_presentation](examples/go_to_definition.gif)
